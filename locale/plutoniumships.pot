@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-10 16:00-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: init.lua:49
+msgid "Ship destroyer"
+msgstr ""
+
+#: init.lua:50
+msgid "Instant Destruction Tool (Admin)"
+msgstr ""
+
+#: init.lua:99
+msgid "Repair Kit"
+msgstr ""
+
+#: init.lua:106
+msgid "Boat Tiller"
+msgstr ""
+
+#: init.lua:107
+msgid "Allows you to create and control a boat"
+msgstr ""
+
+#: init.lua:118
+msgid "Attempting to create the ship..."
+msgstr ""
+
+#: init.lua:134
+msgid "Airship Builder"
+msgstr ""
+
+#: init.lua:135
+msgid "Allows you to build airships"
+msgstr ""
+
+#: init.lua:432 init.lua:694
+msgid "Repair complete! Structure: @1 / @2"
+msgstr ""
+
+#: init.lua:434 init.lua:696
+msgid "The structure is already at its maximum!"
+msgstr ""
+
+#: init.lua:447 init.lua:707
+msgid "You take the helm."
+msgstr ""
+
+#: init.lua:451 init.lua:711
+msgid "No bars found!"
+msgstr ""
+
+#: init.lua:462
+msgid "You went down."
+msgstr ""
+
+#: init.lua:474 init.lua:734
+msgid "You turned around."
+msgstr ""
+
+#: init.lua:722
+msgid "You came down."
+msgstr ""
+
+#: init.lua:872
+msgid "You have repaired your ship; it now has: @1"
+msgstr ""
+
+#: init.lua:875
+msgid "This ship does not need to be repaired."
+msgstr ""
+
+#: init.lua:887
+msgid "The structure is too big!"
+msgstr ""
+
+#: init.lua:892
+msgid "The structure is too small!"
+msgstr ""
+
+#: init.lua:907
+msgid "Too many bars on the boat!"
+msgstr ""
+
+#: init.lua:921
+msgid "Airship created with @1 blocks!"
+msgstr ""
+
+#: init.lua:923
+msgid "Not enough balloons to build an airship!"
+msgstr ""
+
+#: init.lua:927
+msgid "Boat created with @1 blocks!"
+msgstr ""
