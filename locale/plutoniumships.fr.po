@@ -1,0 +1,110 @@
+# French translations for PACKAGE package.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Sheriff_U3 <sheriff_u3@noreply.codeberg.org>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-10 16:00-0500\n"
+"PO-Revision-Date: 2026-04-10 16:15-0500\n"
+"Last-Translator: Sheriff_U3 <sheriff_u3@noreply.codeberg.org>\n"
+"Language-Team: French <traduc@traduc.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: init.lua:49
+msgid "Ship destroyer"
+msgstr ""
+
+#: init.lua:50
+msgid "Instant Destruction Tool (Admin)"
+msgstr "Outil de destruction instantanée (Admin)"
+
+#: init.lua:99
+msgid "Repair Kit"
+msgstr "Kit de Réparation"
+
+#: init.lua:106
+msgid "Boat Tiller"
+msgstr ""
+
+#: init.lua:107
+msgid "Allows you to create and control a boat"
+msgstr "Permet de créer et de contrôler un bateau"
+
+#: init.lua:118
+msgid "Attempting to create the ship..."
+msgstr "Tentative de création du navire ..."
+
+#: init.lua:134
+msgid "Airship Builder"
+msgstr ""
+
+#: init.lua:135
+msgid "Allows you to build airships"
+msgstr "Permet de faire des dirigeables"
+
+#: init.lua:432 init.lua:694
+msgid "Repair complete! Structure: @1 / @2"
+msgstr "Réparation effectuée ! Structure : @1 / @2"
+
+#: init.lua:434 init.lua:696
+msgid "The structure is already at its maximum!"
+msgstr "La structure est déjà au maximum !"
+
+#: init.lua:447 init.lua:707
+msgid "You take the helm."
+msgstr "Vous prenez les commandes."
+
+#: init.lua:451 init.lua:711
+msgid "No bars found!"
+msgstr "Aucune barre trouvée !"
+
+#: init.lua:462
+msgid "You went down."
+msgstr "Vous êtes descendu."
+
+#: init.lua:474 init.lua:734
+msgid "You turned around."
+msgstr "Vous vous êtes tourné."
+
+#: init.lua:722
+msgid "You came down."
+msgstr "Vous êtes descendu."
+
+#: init.lua:872
+msgid "You have repaired your ship; it now has: @1"
+msgstr "Vous avez réparé votre navire, il a désormais : @1"
+
+#: init.lua:875
+msgid "This ship does not need to be repaired."
+msgstr "Ce navire n'a pas besoin d'être réparé"
+
+#: init.lua:887
+msgid "The structure is too big!"
+msgstr "Structure trop grande !"
+
+#: init.lua:892
+msgid "The structure is too small!"
+msgstr "Structure est trop petite!"
+
+#: init.lua:907
+msgid "Too many bars on the boat!"
+msgstr "Trop de barres sur le bateau !"
+
+#: init.lua:921
+msgid "Airship created with @1 blocks!"
+msgstr "Dirigeable créé avec @1 blocks !"
+
+#: init.lua:923
+msgid "Not enough balloons to build an airship!"
+msgstr "Pas assez de ballon pour créer un dirigeable !"
+
+#: init.lua:927
+msgid "Boat created with @1 blocks!"
+msgstr "Bateau créé avec @1 blocks !"
