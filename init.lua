@@ -41,7 +41,7 @@ local allowed_blocks = {
 
 
 -- Enregistrement de l'outil de destrcution (admin)
-minetest.register_tool("plutoniumships:destroyer_tool", {
+core.register_tool("plutoniumships:destroyer_tool", {
 	description = "Outil de destruction instantanée (Admin)",
 	inventory_image = "default_tool_steelaxe.png", -- Tu peux remplacer par une image custom
 	tool_capabilities = {
@@ -68,7 +68,7 @@ minetest.register_tool("plutoniumships:destroyer_tool", {
 						end
 					end
 					obj:remove()
-					minetest.chat_send_player(user:get_player_name(), "Entité détruite !")
+					core.chat_send_player(user:get_player_name(), "Entité détruite !")
 				end
 			end
 		end
@@ -78,7 +78,7 @@ minetest.register_tool("plutoniumships:destroyer_tool", {
 
 
 -- Enregistrement du kit de réparation
-minetest.register_craft({
+core.register_craft({
 	output = "plutoniumships:repair_kit",
 	recipe = {
 		{"anvil:hammer", "default:wood", "default:steel_ingot"},
@@ -86,13 +86,13 @@ minetest.register_craft({
 		{"default:mese_crystal", "default:wood", "screwdriver:screwdriver"},
 	}
 })
-minetest.register_craftitem("plutoniumships:repair_kit", {
+core.register_craftitem("plutoniumships:repair_kit", {
 	description = "Kit de Réparation",
 	inventory_image = "plutoniumships_repair_kit.png",
 })
 
 -- Enregistrement du noeud barre permettant de contrôler un bateau
-minetest.register_node("plutoniumships:barre", {
+core.register_node("plutoniumships:barre", {
 	description = "Permet de créer et de contrôler un bateau",
 	tiles = {
 		"plutoniumships_helm_top.png",
@@ -104,11 +104,11 @@ minetest.register_node("plutoniumships:barre", {
 	},
 	groups = {cracky = 1},
 	on_rightclick = function(pos, node, player, itemstack, pointed_thing)
-		minetest.chat_send_player(player:get_player_name(), "Tentative de création du navire ...")
+		core.chat_send_player(player:get_player_name(), "Tentative de création du navire ...")
 		convert_to_entity(pos, player)
 	end
 })
-minetest.register_craft({
+core.register_craft({
 	output = "plutoniumships:barre",
 	recipe = {
 		{"default:wood", "plutoniumships:repair_kit", "default:wood"},
@@ -118,12 +118,12 @@ minetest.register_craft({
 })
 
 -- Enregistrement du noeud ballon pour les dirigeables
-minetest.register_node("plutoniumships:ballon", {
+core.register_node("plutoniumships:ballon", {
 	description = "Permet de faire des dirigeables",
 	tiles = {"plutoniumships_balloon.png"},
 	groups = {cracky = 1},
 })
-minetest.register_craft({
+core.register_craft({
 	output = "plutoniumships:ballon",
 	recipe = {
 		{"xdecor:rope", "wool:white", "xdecor:rope"},
@@ -149,7 +149,7 @@ function detect_structure(start_pos)
 		end
 
 		local pos = table.remove(stack)
-		local hash = minetest.pos_to_string(pos)
+		local hash = core.pos_to_string(pos)
 
 		if not visited[hash] then
 			visited[hash] = true
@@ -162,8 +162,8 @@ function detect_structure(start_pos)
 				{x = 0, y = 0, z = 1}, {x = 0, y = 0, z = -1}
 			}) do
 				local neighbor = vector.add(pos, offset)
-				local node = minetest.get_node(neighbor)
-				if node.name ~= "air" and not visited[minetest.pos_to_string(neighbor)] then
+				local node = core.get_node(neighbor)
+				if node.name ~= "air" and not visited[core.pos_to_string(neighbor)] then
 					table.insert(stack, neighbor)
 				end
 			end
@@ -176,7 +176,7 @@ end
 -----------------------------------------------------------
 -- Enregistrement de l'entité "plutoniumships:blimp" (dirigeable)
 -----------------------------------------------------------
-minetest.register_entity("plutoniumships:blimp", {
+core.register_entity("plutoniumships:blimp", {
 	-- Propriétés initiales de l'entité
 	initial_properties = {
 		physical = true,
@@ -202,7 +202,7 @@ minetest.register_entity("plutoniumships:blimp", {
 		self.object:set_armor_groups({immortal = 1})
 		self.ship_id = self.object:get_luaentity() and self.object:get_luaentity().name or "unknown"
 		if staticdata and staticdata ~= "" then
-			local data = minetest.deserialize(staticdata)
+			local data = core.deserialize(staticdata)
 			self.structure_data = data.structure_data or {}
 			self.structure = data.structure or 200
 		end
@@ -212,7 +212,7 @@ minetest.register_entity("plutoniumships:blimp", {
 
 	-- get_staticdata : Sérialise les données de l'entité pour sauvegarde
 	get_staticdata = function(self)
-		return minetest.serialize({
+		return core.serialize({
 			structure_data = self.structure_data,
 			structure = self.structure
 		})
@@ -314,19 +314,19 @@ minetest.register_entity("plutoniumships:blimp", {
 		local collisionbox = self.object:get_properties().collisionbox
 		local hitbox_bottom = pos.y + collisionbox[2]
 		local below_pos = {x = pos.x, y = hitbox_bottom, z = pos.z}
-		local below_node = minetest.get_node(below_pos)
+		local below_node = core.get_node(below_pos)
 
-		if minetest.get_item_group(below_node.name, "water") > 0 then
+		if core.get_item_group(below_node.name, "water") > 0 then
 			local function round(num, decimals)
 				local mult = 10^decimals
 				return math.floor(num * mult + 0.5) / mult
 			end
 			local function get_water_surface(pos)
-				local node = minetest.get_node(pos)
-				if minetest.get_item_group(node.name, "water") == 0 then return nil end
-				while minetest.get_item_group(node.name, "water") > 0 do
+				local node = core.get_node(pos)
+				if core.get_item_group(node.name, "water") == 0 then return nil end
+				while core.get_item_group(node.name, "water") > 0 do
 					pos.y = pos.y + 1
-					node = minetest.get_node(pos)
+					node = core.get_node(pos)
 				end
 				return pos.y - 1
 			end
@@ -373,7 +373,7 @@ minetest.register_entity("plutoniumships:blimp", {
 		for _, data in ipairs(self.structure_data) do
 			local rel_pos = data.pos
 			if not rel_pos then return end
-			local entity = minetest.add_entity(vector.add(base_pos, rel_pos), "plutoniumships:block_part")
+			local entity = core.add_entity(vector.add(base_pos, rel_pos), "plutoniumships:block_part")
 			if entity then
 				local luaent = entity:get_luaentity()
 				if luaent then
@@ -396,9 +396,9 @@ minetest.register_entity("plutoniumships:blimp", {
 				self.structure = math.min(self.structure + 10, self.max_structure)
 				wielded_item:take_item()
 				clicker:set_wielded_item(wielded_item)
-				minetest.chat_send_player(clicker:get_player_name(), "Réparation effectuée ! Structure : " .. self.structure .. "/" .. self.max_structure)
+				core.chat_send_player(clicker:get_player_name(), "Réparation effectuée ! Structure : " .. self.structure .. "/" .. self.max_structure)
 			else
-				minetest.chat_send_player(clicker:get_player_name(), "La structure est déjà au maximum !")
+				core.chat_send_player(clicker:get_player_name(), "La structure est déjà au maximum !")
 			end
 			return
 		end
@@ -410,11 +410,11 @@ minetest.register_entity("plutoniumships:blimp", {
 				if data.node == "plutoniumships:barre" then
 					clicker:set_attach(self.object, "", vector.multiply(data.pos, 10), {x = 0, y = 0, z = 0})
 					self.driver = clicker
-					minetest.chat_send_player(clicker:get_player_name(), "Vous prenez les commandes.")
+					core.chat_send_player(clicker:get_player_name(), "Vous prenez les commandes.")
 					return
 				end
 			end
-			minetest.chat_send_player(clicker:get_player_name(), "Aucune barre trouvée !")
+			core.chat_send_player(clicker:get_player_name(), "Aucune barre trouvée !")
 		elseif self.driver == clicker then
 			self:detach_driver()
 		end
@@ -424,7 +424,7 @@ minetest.register_entity("plutoniumships:blimp", {
 	detach_driver = function(self)
 		if self.driver then
 			self.driver:set_detach()
-			minetest.chat_send_player(self.driver:get_player_name(), "Vous êtes descendu.")
+			core.chat_send_player(self.driver:get_player_name(), "Vous êtes descendu.")
 			self.driver = nil
 		end
 	end,
@@ -435,7 +435,7 @@ minetest.register_entity("plutoniumships:blimp", {
 			if not self.player_rotation then self.player_rotation = 0 end
 			self.player_rotation = (self.player_rotation + 90) % 360
 			hitter:set_attach(self.object, "", {x = 0, y = 0, z = 0}, {x = 0, y = self.player_rotation, z = 0})
-			minetest.chat_send_player(hitter:get_player_name(), "Vous vous êtes tourné.")
+			core.chat_send_player(hitter:get_player_name(), "Vous vous êtes tourné.")
 		else
 			if self.structure > 1 then
 				self.structure = self.structure - 1
@@ -454,7 +454,7 @@ minetest.register_entity("plutoniumships:blimp", {
 -----------------------------------------------------------
 -- Enregistrement de l'entité "plutoniumships:ship" (bateau)
 -----------------------------------------------------------
-minetest.register_entity("plutoniumships:ship", {
+core.register_entity("plutoniumships:ship", {
 	initial_properties = {
 		physical = true,
 		collide_with_objects = true,
@@ -482,7 +482,7 @@ minetest.register_entity("plutoniumships:ship", {
 		self.ship_id = self.object:get_luaentity() and self.object:get_luaentity().name or "unknown"
 		self.passenger_seats = {}
 		if staticdata and staticdata ~= "" then
-			local data = minetest.deserialize(staticdata)
+			local data = core.deserialize(staticdata)
 			self.structure_data = data.structure_data or {}
 			self.structure = data.structure or 200
 		end
@@ -492,7 +492,7 @@ minetest.register_entity("plutoniumships:ship", {
 
 	-- get_staticdata : Sérialise les données du bateau pour sauvegarde
 	get_staticdata = function(self)
-		return minetest.serialize({
+		return core.serialize({
 			structure_data = self.structure_data,
 			structure = self.structure
 		})
@@ -569,19 +569,19 @@ minetest.register_entity("plutoniumships:ship", {
 		local collisionbox = self.object:get_properties().collisionbox
 		local hitbox_bottom = pos.y + collisionbox[2]
 		local below_pos = {x = pos.x, y = hitbox_bottom, z = pos.z}
-		local below_node = minetest.get_node(below_pos)
+		local below_node = core.get_node(below_pos)
 
-		if minetest.get_item_group(below_node.name, "water") > 0 then
+		if core.get_item_group(below_node.name, "water") > 0 then
 			local function round(num, decimals)
 				local mult = 10^decimals
 				return math.floor(num * mult + 0.5) / mult
 			end
 			local function get_water_surface(pos)
-				local node = minetest.get_node(pos)
-				if minetest.get_item_group(node.name, "water") == 0 then return nil end
-				while minetest.get_item_group(node.name, "water") > 0 do
+				local node = core.get_node(pos)
+				if core.get_item_group(node.name, "water") == 0 then return nil end
+				while core.get_item_group(node.name, "water") > 0 do
 					pos.y = pos.y + 1
-					node = minetest.get_node(pos)
+					node = core.get_node(pos)
 				end
 				return pos.y - 1
 			end
@@ -624,7 +624,7 @@ minetest.register_entity("plutoniumships:ship", {
 		for _, data in ipairs(self.structure_data) do
 			local rel_pos = data.pos
 			if not rel_pos then return end
-			local entity = minetest.add_entity(vector.add(base_pos, rel_pos), "plutoniumships:block_part")
+			local entity = core.add_entity(vector.add(base_pos, rel_pos), "plutoniumships:block_part")
 			if entity then
 				local luaent = entity:get_luaentity()
 				if luaent then
@@ -647,9 +647,9 @@ minetest.register_entity("plutoniumships:ship", {
 				self.structure = math.min(self.structure + 10, self.max_structure)
 				wielded_item:take_item()
 				clicker:set_wielded_item(wielded_item)
-				minetest.chat_send_player(clicker:get_player_name(), "Réparation effectuée ! Structure : " .. self.structure .. "/" .. self.max_structure)
+				core.chat_send_player(clicker:get_player_name(), "Réparation effectuée ! Structure : " .. self.structure .. "/" .. self.max_structure)
 			else
-				minetest.chat_send_player(clicker:get_player_name(), "La structure est déjà au maximum !")
+				core.chat_send_player(clicker:get_player_name(), "La structure est déjà au maximum !")
 			end
 			return
 		end
@@ -660,11 +660,11 @@ minetest.register_entity("plutoniumships:ship", {
 				if data.node == "plutoniumships:barre" then
 					clicker:set_attach(self.object, "", vector.multiply(data.pos, 10), {x = 0, y = 0, z = 0})
 					self.driver = clicker
-					minetest.chat_send_player(clicker:get_player_name(), "Vous prenez les commandes.")
+					core.chat_send_player(clicker:get_player_name(), "Vous prenez les commandes.")
 					return
 				end
 			end
-			minetest.chat_send_player(clicker:get_player_name(), "Aucune barre trouvée !")
+			core.chat_send_player(clicker:get_player_name(), "Aucune barre trouvée !")
 		elseif self.driver == clicker then
 			self:detach_driver()
 		end
@@ -674,7 +674,7 @@ minetest.register_entity("plutoniumships:ship", {
 	detach_driver = function(self)
 		if self.driver then
 			self.driver:set_detach()
-			minetest.chat_send_player(self.driver:get_player_name(), "Vous êtes descendu.")
+			core.chat_send_player(self.driver:get_player_name(), "Vous êtes descendu.")
 			self.driver = nil
 		end
 	end,
@@ -685,7 +685,7 @@ minetest.register_entity("plutoniumships:ship", {
 			if not self.player_rotation then self.player_rotation = 0 end
 			self.player_rotation = (self.player_rotation + 90) % 360
 			hitter:set_attach(self.object, "", {x = 0, y = 0, z = 0}, {x = 0, y = self.player_rotation, z = 0})
-			minetest.chat_send_player(hitter:get_player_name(), "Vous vous êtes tourné.")
+			core.chat_send_player(hitter:get_player_name(), "Vous vous êtes tourné.")
 		else
 			if self.structure > 1 then
 				self.structure = self.structure - 1
@@ -704,7 +704,7 @@ minetest.register_entity("plutoniumships:ship", {
 -----------------------------------------------------------
 -- Enregistrement de l'entité "plutoniumships:block_part" (partie visuelle des blocs)
 -----------------------------------------------------------
-minetest.register_entity("plutoniumships:block_part", {
+core.register_entity("plutoniumships:block_part", {
 	initial_properties = {
 		physical = true,
 		collide_with_objects = true,
@@ -719,7 +719,7 @@ minetest.register_entity("plutoniumships:block_part", {
 	on_activate = function(self, staticdata, dtime_s)
 		self.object:set_armor_groups({immortal = 1})
 		if staticdata and staticdata ~= "" then
-			local data = minetest.deserialize(staticdata)
+			local data = core.deserialize(staticdata)
 			if data and data.ship_id then
 				self.ship_id = data.ship_id
 			end
@@ -728,7 +728,7 @@ minetest.register_entity("plutoniumships:block_part", {
 
 	-- get_staticdata : Sérialise l'ID du navire pour sauvegarde
 	get_staticdata = function(self)
-		return minetest.serialize({ship_id = self.ship_id})
+		return core.serialize({ship_id = self.ship_id})
 	end,
 
 	-- on_step : Vérifie que le navire associé existe toujours, sinon supprime le bloc
@@ -739,7 +739,7 @@ minetest.register_entity("plutoniumships:block_part", {
 		end
 
 		local still_exists = false
-		for _, obj in ipairs(minetest.get_objects_inside_radius(self.object:get_pos(), 20)) do
+		for _, obj in ipairs(core.get_objects_inside_radius(self.object:get_pos(), 20)) do
 			local ent = obj:get_luaentity()
 			if ent and (ent.name == "plutoniumships:ship" or ent.name == "plutoniumships:blimp") and ent.ship_id == self.ship_id then
 				still_exists = true
@@ -753,7 +753,7 @@ minetest.register_entity("plutoniumships:block_part", {
 
 	-- set_texture : Définit la texture et la luminance en fonction du bloc de base
 	set_texture = function(self, node_name)
-		local def = minetest.registered_nodes[node_name]
+		local def = core.registered_nodes[node_name]
 		if not def or not def.tiles then return end
 		local glow_value = def.light_source or 0
 		self.object:set_properties({glow = glow_value})
@@ -816,10 +816,10 @@ local function repair_ship(player, ship)
 	if structure < max_structure then
 		structure = structure + 10
 		ship.structure = structure
-		minetest.chat_send_player(player_name, "Vous avez réparé votre navire, il a désormais : " .. structure)
+		core.chat_send_player(player_name, "Vous avez réparé votre navire, il a désormais : " .. structure)
 		return true
 	else
-		minetest.chat_send_player(player_name, "Ce navire n'a pas besoin d'être réparé")
+		core.chat_send_player(player_name, "Ce navire n'a pas besoin d'être réparé")
 		return false
 	end
 end
@@ -830,12 +830,12 @@ end
 function convert_to_entity(pos, player)
 	local structure = detect_structure(pos)
 	if #structure >= max_size then
-		minetest.chat_send_player(player:get_player_name(), "Structure trop grande !")
+		core.chat_send_player(player:get_player_name(), "Structure trop grande !")
 		return
 	end
 
 	if #structure < 10 then
-		minetest.chat_send_player(player:get_player_name(), "Structure est trop petite!")
+		core.chat_send_player(player:get_player_name(), "Structure est trop petite!")
 		return
 	end
 
@@ -845,11 +845,11 @@ function convert_to_entity(pos, player)
 
 	-- Comptage des barres et ballons
 	for _, block_pos in ipairs(structure) do
-		local node = minetest.get_node(block_pos)
+		local node = core.get_node(block_pos)
 		if node.name == "plutoniumships:barre" then
 			bar_count = bar_count + 1
 			if bar_count > 1 then
-				minetest.chat_send_player(player:get_player_name(), "Trop de barres sur le bateau !")
+				core.chat_send_player(player:get_player_name(), "Trop de barres sur le bateau !")
 				return
 			end
 		elseif node.name == "plutoniumships:ballon" then
@@ -863,24 +863,24 @@ function convert_to_entity(pos, player)
 	local entity_name
 	if balloon_ratio >= 0.5 then
 		entity_name = "plutoniumships:blimp"
-		minetest.chat_send_player(player:get_player_name(), "Dirigeable créé avec " .. total_blocks .. " blocks !")
+		core.chat_send_player(player:get_player_name(), "Dirigeable créé avec " .. total_blocks .. " blocks !")
 	elseif (balloon_ratio < 0.5) and (balloon_count >= 1) then
-		minetest.chat_send_player(player:get_player_name(), "Pas assez de ballon pour créer un dirigeable !")
+		core.chat_send_player(player:get_player_name(), "Pas assez de ballon pour créer un dirigeable !")
 		return
 	else
 		entity_name = "plutoniumships:ship"
-		minetest.chat_send_player(player:get_player_name(), "Bateau créé avec " .. total_blocks .. " blocks !")
+		core.chat_send_player(player:get_player_name(), "Bateau créé avec " .. total_blocks .. " blocks !")
 	end
 
 	local structure_data = {}
 	local center = vector.new(pos)
 	for _, block_pos in ipairs(structure) do
-		local node = minetest.get_node(block_pos)
+		local node = core.get_node(block_pos)
 		table.insert(structure_data, {pos = vector.subtract(block_pos, center), node = node.name})
-		minetest.set_node(block_pos, {name = "air"})
+		core.set_node(block_pos, {name = "air"})
 	end
 
-	local entity = minetest.add_entity(center, entity_name)
+	local entity = core.add_entity(center, entity_name)
 	if entity then
 		local luaent = entity:get_luaentity()
 		if luaent then
