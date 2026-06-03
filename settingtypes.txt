@@ -1,0 +1,36 @@
+# ===========================================================================
+# Plutonium's Ships - parametres de configuration
+# Modifiables dans minetest.conf ou via le menu Settings
+# ===========================================================================
+
+# --- Tailles ---
+# Nombre maximum de blocs d'un vehicule
+plutoniumships_max_size (Taille maximale d'un vehicule en blocs) int 50 5 50000
+
+# Nombre minimum de blocs pour pouvoir creer un vehicule
+plutoniumships_min_size (Taille minimale d'un vehicule en blocs) int 10 2 50
+
+# Distance maximale (en blocs) de la barre par rapport au centre de la structure
+# (evite une hitbox generale disproportionnee)
+plutoniumships_max_helm_offset (Distance max de la barre depuis le centre) float 2.0 1.0 20.0
+
+# --- Physique ---
+# Vitesse maximale des bateaux (unites/seconde)
+plutoniumships_max_speed (Vitesse max des bateaux) float 10.0 1.0 50.0
+
+# Vitesse maximale des dirigeables (horizontale)
+plutoniumships_blimp_max_speed (Vitesse max des dirigeables) float 10.0 1.0 50.0
+
+# Vitesse verticale maximale des dirigeables
+plutoniumships_blimp_max_vspeed (Vitesse verticale max des dirigeables) float 5.0 0.5 20.0
+
+# Vitesse de rotation (degres par tick) - valeur faible = rotation douce
+plutoniumships_turn_speed (Vitesse de rotation) float 0.4 0.05 5.0
+
+# Facteur d'acceleration horizontale - valeur faible = acceleration douce
+plutoniumships_accel_factor (Facteur d'acceleration) float 0.015 0.001 0.3
+
+# --- Ballons (dirigeables) ---
+# Proportion minimale de ballons par rapport au total pour creer un dirigeable
+# Exemple : 0.5 = au moins 50% des blocs doivent etre des ballons
+plutoniumships_balloon_ratio (Proportion min de ballons pour un dirigeable) float 0.5 0.1 0.95
