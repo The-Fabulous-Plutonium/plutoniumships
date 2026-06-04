@@ -5,7 +5,7 @@
 
 # --- Tailles ---
 # Nombre maximum de blocs d'un vehicule
-plutoniumships_max_size (Taille maximale d'un vehicule en blocs) int 50 5 50000
+plutoniumships_max_size (Taille maximale d'un vehicule en blocs) int 50 5 5000
 
 # Nombre minimum de blocs pour pouvoir creer un vehicule
 plutoniumships_min_size (Taille minimale d'un vehicule en blocs) int 10 2 50
