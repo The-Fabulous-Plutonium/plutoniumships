@@ -19,8 +19,8 @@
 -- ---------------------------------------------------------------------------
 -- 1. CONFIG
 -- ---------------------------------------------------------------------------
-local function cfg_int(n, d)   return math.floor(tonumber(minetest.settings:get(n)) or d) end
-local function cfg_float(n, d) return tonumber(minetest.settings:get(n)) or d end
+local function cfg_int(n, d)   return math.floor(tonumber(core.settings:get(n)) or d) end
+local function cfg_float(n, d) return tonumber(core.settings:get(n)) or d end
 
 local cfg = {
     max_size         = cfg_int  ("plutoniumships_max_size",          50),
@@ -93,12 +93,12 @@ end
 
 local function mesh_type(name, def)
     if not def then return "cube", nil end
-    if minetest.get_item_group(name,"fence") > 0 then return "fence", nil end
-    if minetest.get_item_group(name,"wall")  > 0 then return "wall",  nil end
-    if minetest.get_item_group(name,"pane")  > 0 then return "pane",  nil end
-    if minetest.get_item_group(name,"stair") > 0
+    if core.get_item_group(name,"fence") > 0 then return "fence", nil end
+    if core.get_item_group(name,"wall")  > 0 then return "wall",  nil end
+    if core.get_item_group(name,"pane")  > 0 then return "pane",  nil end
+    if core.get_item_group(name,"stair") > 0
         or name:find("^stairs:stair_") then return "stair", nil end
-    if minetest.get_item_group(name,"slab")  > 0
+    if core.get_item_group(name,"slab")  > 0
         or name:find("^stairs:slab_")  then return "slab",  nil end
     local dt = def.drawtype
     if dt==nil or dt=="normal" or dt=="allfaces" or dt=="allfaces_optional"
@@ -171,7 +171,7 @@ local function is_ok(name)
     if name=="air" or name=="ignore" then return false end
     if ALLOWED_SPECIAL[name] then return true end
     for _,g in ipairs(ALLOWED_GROUPS) do
-        if minetest.get_item_group(name,g)>0 then return true end
+        if core.get_item_group(name,g)>0 then return true end
     end
     return false
 end
@@ -181,11 +181,11 @@ end
 -- ---------------------------------------------------------------------------
 local function find_water_surface(x, y_bottom, z)
     local ix,iy,iz = math.floor(x),math.floor(y_bottom),math.floor(z)
-    local nd = minetest.get_node({x=ix,y=iy,z=iz})
-    if minetest.get_item_group(nd.name,"water")==0 then return false,nil end
+    local nd = core.get_node({x=ix,y=iy,z=iz})
+    if core.get_item_group(nd.name,"water")==0 then return false,nil end
     for dy=0,25 do
-        local n=minetest.get_node({x=ix,y=iy+dy+1,z=iz})
-        if minetest.get_item_group(n.name,"water")==0 then return true,(iy+dy) end
+        local n=core.get_node({x=ix,y=iy+dy+1,z=iz})
+        if core.get_item_group(n.name,"water")==0 then return true,(iy+dy) end
     end
     return true,(iy+25)
 end
@@ -231,7 +231,7 @@ end
 -- 7. ENREGISTREMENT NOEUDS / ITEMS
 -- ---------------------------------------------------------------------------
 
-minetest.register_tool("plutoniumships:destroyer_tool",{
+core.register_tool("plutoniumships:destroyer_tool",{
     description="Outil de destruction instantanee (Admin)",
     inventory_image="default_tool_steelaxe.png",
     tool_capabilities={
@@ -254,22 +254,22 @@ minetest.register_tool("plutoniumships:destroyer_tool",{
                 if be and be:get_luaentity() then be:remove() end
             end
             pt.ref:remove()
-            minetest.chat_send_player(user:get_player_name(),"Entite detruite !")
+            core.chat_send_player(user:get_player_name(),"Entite detruite !")
         end
     end,
 })
 
-minetest.register_craftitem("plutoniumships:repair_kit",{
+core.register_craftitem("plutoniumships:repair_kit",{
     description="Kit de Reparation",
     inventory_image="plutoniumships_repair_kit.png",
 })
-minetest.register_craft({output="plutoniumships:repair_kit",recipe={
+core.register_craft({output="plutoniumships:repair_kit",recipe={
     {"anvil:hammer","default:wood","default:steel_ingot"},
     {"default:wood","boats:boat","default:wood"},
     {"default:mese_crystal","default:wood","screwdriver:screwdriver"},
 }})
 
-minetest.register_node("plutoniumships:barre",{
+core.register_node("plutoniumships:barre",{
     description="Barre de controle – clic droit pour creer le navire",
     tiles={
         "plutoniumships_helm_top.png","plutoniumships_helm_bottom.png",
@@ -278,11 +278,11 @@ minetest.register_node("plutoniumships:barre",{
     },
     paramtype2="facedir", groups={cracky=1},
     on_rightclick=function(pos,_,player,_,_)
-        minetest.chat_send_player(player:get_player_name(),"Tentative de creation du navire ...")
+        core.chat_send_player(player:get_player_name(),"Tentative de creation du navire ...")
         convert_to_entity(pos,player)
     end,
 })
-minetest.register_craft({output="plutoniumships:barre",recipe={
+core.register_craft({output="plutoniumships:barre",recipe={
     {"default:wood","plutoniumships:repair_kit","default:wood"},
     {"mesecons_materials:glue","mesecons_powerplant:power_plant","mesecons_materials:glue"},
     {"default:wood","default:wood","default:wood"},
@@ -306,26 +306,26 @@ for _,c in ipairs(BALLOON_COLORS) do
     -- Le blanc utilise aussi l'ancienne texture générique en fallback
     local tiles_list = (c.id=="white") and
         {"plutoniumships_balloon_white.png"} or {tex}
-    minetest.register_node(nm,{
+    core.register_node(nm,{
         description="Ballon "..c.desc,
         tiles=tiles_list,
         groups={cracky=1,balloon=1},
     })
-    minetest.register_craft({output=nm.." 2",recipe={
+    core.register_craft({output=nm.." 2",recipe={
         {"xdecor:rope", c.wool,                "xdecor:rope"},
         {c.wool,        "default:mese_crystal", c.wool},
         {"xdecor:rope", c.wool,                "xdecor:rope"},
     }})
 end
 -- Alias rétrocompat : "plutoniumships:ballon" → blanc
-minetest.register_alias("plutoniumships:ballon","plutoniumships:ballon_white")
+core.register_alias("plutoniumships:ballon","plutoniumships:ballon_white")
 ALLOWED_SPECIAL["plutoniumships:ballon"]=true  -- pour la détection
 
 -- ---------------------------------------------------------------------------
 -- 8. DÉTECTION DE STRUCTURE
 -- ---------------------------------------------------------------------------
 function detect_structure(start_pos)
-    local sn=minetest.get_node(start_pos)
+    local sn=core.get_node(start_pos)
     if sn.name=="air" or sn.name=="ignore" then return {},{} end
     local stack={vector.new(start_pos)}
     local visited,allowed,banned={},{},{}
@@ -336,10 +336,10 @@ function detect_structure(start_pos)
             return allowed, banned, true  -- 3e valeur = trop_grand
         end
         local pos=table.remove(stack)
-        local hash=minetest.pos_to_string(pos)
+        local hash=core.pos_to_string(pos)
         if visited[hash] then goto _nxt end
         visited[hash]=true
-        local nd=minetest.get_node(pos)
+        local nd=core.get_node(pos)
         if nd.name~="air" and nd.name~="ignore" then
             if is_ok(nd.name) then
                 table.insert(allowed,pos)
@@ -347,8 +347,8 @@ function detect_structure(start_pos)
                 if #allowed < limit then
                     for _,d in ipairs(DIRS6) do
                         local nb=vector.add(pos,d)
-                        if not visited[minetest.pos_to_string(nb)] then
-                            local nbn=minetest.get_node(nb)
+                        if not visited[core.pos_to_string(nb)] then
+                            local nbn=core.get_node(nb)
                             if nbn.name~="air" and nbn.name~="ignore" then
                                 table.insert(stack,nb)
                             end
@@ -360,8 +360,8 @@ function detect_structure(start_pos)
                 -- Continuer à explorer depuis les blocs non autorisés aussi
                 for _,d in ipairs(DIRS6) do
                     local nb=vector.add(pos,d)
-                    if not visited[minetest.pos_to_string(nb)] then
-                        local nbn=minetest.get_node(nb)
+                    if not visited[core.pos_to_string(nb)] then
+                        local nbn=core.get_node(nb)
                         if nbn.name~="air" and nbn.name~="ignore" then
                             table.insert(stack,nb)
                         end
@@ -379,7 +379,7 @@ end
 --    Responsables UNIQUEMENT du rendu visuel.
 -- ---------------------------------------------------------------------------
 local function setup_block_visual(le, node_name, param2, facecons)
-    local def=minetest.registered_nodes[node_name]; if not def then return end
+    local def=core.registered_nodes[node_name]; if not def then return end
     local mtype_,mfile=mesh_type(node_name,def)
     local glow=def.light_source or 0
     local tx=tiles6(def)
@@ -411,7 +411,7 @@ local function setup_block_visual(le, node_name, param2, facecons)
     le.object:set_properties(props)
 end
 
-minetest.register_entity("plutoniumships:block_visual",{
+core.register_entity("plutoniumships:block_visual",{
     initial_properties={
         physical=false, collide_with_objects=false,
         pointable=false,   -- invisible aux clics : les block_part gèrent l'interaction
@@ -432,7 +432,7 @@ minetest.register_entity("plutoniumships:block_visual",{
 --     Responsables de la collision joueur/structure et structure/structure.
 --     Repositionnées manuellement chaque frame.
 -- ---------------------------------------------------------------------------
-minetest.register_entity("plutoniumships:block_part",{
+core.register_entity("plutoniumships:block_part",{
     initial_properties={
         physical=true, collide_with_objects=true,
         collisionbox={-0.5,-0.5,-0.5, 0.5,0.5,0.5},
@@ -458,7 +458,7 @@ minetest.register_entity("plutoniumships:block_part",{
         self._t=0
         if not self.ship_id then self.object:remove(); return end
         local p=self.object:get_pos(); if not p then self.object:remove(); return end
-        for _,obj in ipairs(minetest.get_objects_inside_radius(p,8)) do
+        for _,obj in ipairs(core.get_objects_inside_radius(p,8)) do
             local e=obj:get_luaentity()
             if e and e.ship_id==self.ship_id then return end
         end
@@ -494,7 +494,7 @@ local function spawn_blocks(self)
     local cy,sy=math.cos(yaw),math.sin(yaw)
 
     local rel_set={}
-    for _,d in ipairs(self.structure_data) do rel_set[minetest.pos_to_string(d.pos)]=d.node end
+    for _,d in ipairs(self.structure_data) do rel_set[core.pos_to_string(d.pos)]=d.node end
 
     -- Nettoyer tous les anciens blocs avant de recréer (sécurité)
     for _,be in ipairs(self.block_entities or {}) do
@@ -507,7 +507,7 @@ local function spawn_blocks(self)
     self.phys_entities={}
 
     for i,data in ipairs(self.structure_data) do
-        local def=minetest.registered_nodes[data.node]
+        local def=core.registered_nodes[data.node]
         if not def then
             self.block_entities[i]=nil; self.phys_entities[i]=nil; goto _sk
         end
@@ -518,7 +518,7 @@ local function spawn_blocks(self)
         local wpos={x=bpos.x+rx, y=bpos.y+data.pos.y, z=bpos.z+rz}
 
         -- ── Visuel : attaché au navire (set_attach = smooth automatique) ──
-        local vis=minetest.add_entity(wpos,"plutoniumships:block_visual")
+        local vis=core.add_entity(wpos,"plutoniumships:block_visual")
         if vis then
             local le=vis:get_luaentity()
             if le then
@@ -527,7 +527,7 @@ local function spawn_blocks(self)
                 if mt=="fence" or mt=="pane" or mt=="wall" then
                     facecons={}
                     for j,d2 in ipairs(DIRS4H) do
-                        facecons[j]=rel_set[minetest.pos_to_string(vector.add(data.pos,d2))]~=nil
+                        facecons[j]=rel_set[core.pos_to_string(vector.add(data.pos,d2))]~=nil
                     end
                 end
                 setup_block_visual(le,data.node,data.param2,facecons)
@@ -542,7 +542,7 @@ local function spawn_blocks(self)
         else self.block_entities[i]=nil end
 
         -- ── Physique : non attaché, repositionné chaque frame ──
-        local phys=minetest.add_entity(wpos,"plutoniumships:block_part")
+        local phys=core.add_entity(wpos,"plutoniumships:block_part")
         if phys then
             local le=phys:get_luaentity()
             if le then le.ship=self; le.ship_id=self.ship_id end
@@ -592,9 +592,9 @@ function do_rightclick(self,clicker)
         if self.structure<self.max_structure then
             self.structure=math.min(self.structure+10,self.max_structure)
             w:take_item(); clicker:set_wielded_item(w)
-            minetest.chat_send_player(clicker:get_player_name(),
+            core.chat_send_player(clicker:get_player_name(),
                 "Reparation ! "..self.structure.."/"..self.max_structure)
-        else minetest.chat_send_player(clicker:get_player_name(),"Structure deja au max !") end
+        else core.chat_send_player(clicker:get_player_name(),"Structure deja au max !") end
         return
     end
     if self.driver==nil and not clicker:get_player_control().sneak then
@@ -604,11 +604,11 @@ function do_rightclick(self,clicker)
                 clicker:set_attach(self.object,"",vector.multiply(d.pos,10),{x=0,y=0,z=0})
                 self.driver=clicker
                 self.player_rotation=0
-                minetest.chat_send_player(clicker:get_player_name(),"Vous prenez les commandes.")
+                core.chat_send_player(clicker:get_player_name(),"Vous prenez les commandes.")
                 return
             end
         end
-        minetest.chat_send_player(clicker:get_player_name(),"Aucune barre trouvee !")
+        core.chat_send_player(clicker:get_player_name(),"Aucune barre trouvee !")
     elseif self.driver==clicker then
         -- Détacher et corriger l'orientation du joueur
         local ship_yaw=self.object:get_yaw()
@@ -616,7 +616,7 @@ function do_rightclick(self,clicker)
         -- Réorienter le joueur selon l'avant réel du navire
         local player_yaw=ship_yaw + orientation_yaw_offset(self.player_rotation)
         clicker:set_look_horizontal(player_yaw)
-        minetest.chat_send_player(clicker:get_player_name(),"Vous etes descendu.")
+        core.chat_send_player(clicker:get_player_name(),"Vous etes descendu.")
         self.driver=nil
     end
 end
@@ -628,7 +628,7 @@ local function do_punch(self,hitter)
         local bpos=self._barre_pos or {x=0,y=0,z=0}
         hitter:set_attach(self.object,"",vector.multiply(bpos,10),
             {x=0,y=self.player_rotation,z=0})
-        minetest.chat_send_player(hitter:get_player_name(),
+        core.chat_send_player(hitter:get_player_name(),
             "Avant : "..self.player_rotation.."° ("..
             (({[0]="Nord",[90]="Est",[180]="Sud",[270]="Ouest"})[self.player_rotation] or "?")..")")
     else
@@ -670,7 +670,7 @@ end
 -- ---------------------------------------------------------------------------
 -- 12. BATEAU
 -- ---------------------------------------------------------------------------
-minetest.register_entity("plutoniumships:ship",{
+core.register_entity("plutoniumships:ship",{
     initial_properties={
         physical=true, collide_with_objects=true,
         collisionbox={-0.05,-0.05,-0.05, 0.05,0.05,0.05},
@@ -686,7 +686,7 @@ minetest.register_entity("plutoniumships:ship",{
         self.object:set_armor_groups({immortal=1})
         self.object:set_properties(INVIS)
         if staticdata and staticdata~="" then
-            local d=minetest.deserialize(staticdata)
+            local d=core.deserialize(staticdata)
             if d then
                 self.structure_data=d.structure_data or {}
                 self.structure=d.structure or 200
@@ -700,7 +700,7 @@ minetest.register_entity("plutoniumships:ship",{
                 -- fantômes à de mauvaises positions.
                 local self_ref = self
                 self_ref._blocks_spawned = false  -- permettre le spawn initial
-                minetest.after(0.05, function()
+                core.after(0.05, function()
                     if self_ref and self_ref.object and self_ref.object:get_luaentity() then
                         spawn_blocks(self_ref)
                     end
@@ -711,7 +711,7 @@ minetest.register_entity("plutoniumships:ship",{
     end,
 
     get_staticdata=function(self)
-        return minetest.serialize({
+        return core.serialize({
             structure_data=self.structure_data, structure=self.structure,
             max_structure=self.max_structure, ship_id=self.ship_id, _mf=self._mf,
         })
@@ -765,7 +765,7 @@ minetest.register_entity("plutoniumships:ship",{
             local ship_yaw=self.object:get_yaw()
             self.driver:set_detach()
             self.driver:set_look_horizontal(ship_yaw+orientation_yaw_offset(self.player_rotation))
-            minetest.chat_send_player(self.driver:get_player_name(),"Vous etes descendu.")
+            core.chat_send_player(self.driver:get_player_name(),"Vous etes descendu.")
             self.driver=nil
         end
     end,
@@ -774,7 +774,7 @@ minetest.register_entity("plutoniumships:ship",{
 -- ---------------------------------------------------------------------------
 -- 13. DIRIGEABLE
 -- ---------------------------------------------------------------------------
-minetest.register_entity("plutoniumships:blimp",{
+core.register_entity("plutoniumships:blimp",{
     initial_properties={
         physical=true, collide_with_objects=true,
         collisionbox={-0.05,-0.05,-0.05, 0.05,0.05,0.05},
@@ -791,7 +791,7 @@ minetest.register_entity("plutoniumships:blimp",{
         self.object:set_armor_groups({immortal=1})
         self.object:set_properties(INVIS)
         if staticdata and staticdata~="" then
-            local d=minetest.deserialize(staticdata)
+            local d=core.deserialize(staticdata)
             if d then
                 self.structure_data=d.structure_data or {}
                 self.structure=d.structure or 200
@@ -802,7 +802,7 @@ minetest.register_entity("plutoniumships:blimp",{
                 apply_hitbox(self)
                 local self_ref = self
                 self_ref._blocks_spawned = false  -- permettre le spawn initial
-                minetest.after(0.05, function()
+                core.after(0.05, function()
                     if self_ref and self_ref.object and self_ref.object:get_luaentity() then
                         spawn_blocks(self_ref)
                     end
@@ -812,7 +812,7 @@ minetest.register_entity("plutoniumships:blimp",{
         self.object:set_properties({infotext="Dirigeable - Structure : "..(self.structure or 0)})
     end,
     get_staticdata=function(self)
-        return minetest.serialize({
+        return core.serialize({
             structure_data=self.structure_data, structure=self.structure,
             max_structure=self.max_structure, ship_id=self.ship_id,
             balloon_ratio=self.balloon_ratio, _mf=self._mf,
@@ -892,7 +892,7 @@ minetest.register_entity("plutoniumships:blimp",{
             local ship_yaw=self.object:get_yaw()
             self.driver:set_detach()
             self.driver:set_look_horizontal(ship_yaw+orientation_yaw_offset(self.player_rotation))
-            minetest.chat_send_player(self.driver:get_player_name(),"Vous etes descendu.")
+            core.chat_send_player(self.driver:get_player_name(),"Vous etes descendu.")
             self.driver=nil
         end
     end,
@@ -905,21 +905,21 @@ minetest.register_entity("plutoniumships:blimp",{
 -- le navire parent n'existe plus. Protège contre les fuites d'entités.
 -- ---------------------------------------------------------------------------
 local _cleanup_timer = 0
-minetest.register_globalstep(function(dtime)
+core.register_globalstep(function(dtime)
     _cleanup_timer = _cleanup_timer + dtime
     if _cleanup_timer < 10 then return end
     _cleanup_timer = 0
 
     -- Collecter tous les ship_id actifs
     local active_ids = {}
-    for _, obj in pairs(minetest.luaentities) do
+    for _, obj in pairs(core.luaentities) do
         if obj and (obj.name == "plutoniumships:ship" or obj.name == "plutoniumships:blimp") then
             if obj.ship_id then active_ids[obj.ship_id] = true end
         end
     end
 
     -- Supprimer les blocs orphelins
-    for _, obj in pairs(minetest.luaentities) do
+    for _, obj in pairs(core.luaentities) do
         if obj and (obj.name == "plutoniumships:block_visual" or
                     obj.name == "plutoniumships:block_part") then
             if not obj.ship_id or not active_ids[obj.ship_id] then
@@ -937,33 +937,33 @@ function convert_to_entity(pos,player)
     local structure,banned,too_big=detect_structure(pos)
 
     if too_big then
-        minetest.chat_send_player(pname,"Structure trop grande ! (max "..cfg.max_size.." blocs)"); return
+        core.chat_send_player(pname,"Structure trop grande ! (max "..cfg.max_size.." blocs)"); return
     end
     if next(banned)~=nil then
         local names={}
         for n in pairs(banned) do table.insert(names,n) end
         table.sort(names)
-        minetest.chat_send_player(pname,
+        core.chat_send_player(pname,
             "Creation impossible - blocs non autorises : "..table.concat(names,", "))
         return
     end
     if #structure<cfg.min_size then
-        minetest.chat_send_player(pname,"Structure trop petite ! (min "..cfg.min_size..")"); return
+        core.chat_send_player(pname,"Structure trop petite ! (min "..cfg.min_size..")"); return
     end
 
     local bar_count,balloon_count=0,0
     for _,bp in ipairs(structure) do
-        local nd=minetest.get_node(bp)
+        local nd=core.get_node(bp)
         if nd.name=="plutoniumships:barre" then
             bar_count=bar_count+1
             if bar_count>1 then
-                minetest.chat_send_player(pname,"Trop de barres ! Une seule autorisee."); return
+                core.chat_send_player(pname,"Trop de barres ! Une seule autorisee."); return
             end
         end
-        if minetest.get_item_group(nd.name,"balloon")>0 then balloon_count=balloon_count+1 end
+        if core.get_item_group(nd.name,"balloon")>0 then balloon_count=balloon_count+1 end
     end
     if bar_count==0 then
-        minetest.chat_send_player(pname,"Aucune barre de controle !"); return
+        core.chat_send_player(pname,"Aucune barre de controle !"); return
     end
 
     local total=#structure
@@ -972,13 +972,13 @@ function convert_to_entity(pos,player)
 
     if balloon_count==0 then
         ename="plutoniumships:ship"
-        minetest.chat_send_player(pname,"Bateau cree avec "..total.." blocs !")
+        core.chat_send_player(pname,"Bateau cree avec "..total.." blocs !")
     elseif ratio>=cfg.balloon_ratio then
         ename="plutoniumships:blimp"
-        minetest.chat_send_player(pname,
+        core.chat_send_player(pname,
             string.format("Dirigeable cree ! (%d blocs, %.0f%% ballons)",total,ratio*100))
     else
-        minetest.chat_send_player(pname,
+        core.chat_send_player(pname,
             string.format("Pas assez de ballons ! (%.0f%% / %.0f%% requis)",
                 ratio*100,cfg.balloon_ratio*100)); return
     end
@@ -994,7 +994,7 @@ function convert_to_entity(pos,player)
     local max_off = cfg.max_helm_offset
     local helm_world = nil
     for _,bp in ipairs(structure) do
-        if minetest.get_node(bp).name=="plutoniumships:barre" then
+        if core.get_node(bp).name=="plutoniumships:barre" then
             helm_world=bp; break
         end
     end
@@ -1003,7 +1003,7 @@ function convert_to_entity(pos,player)
         local hdz = helm_world.z - cz
         local helm_dist = math.sqrt(hdx*hdx + hdz*hdz)
         if helm_dist > max_off then
-            minetest.chat_send_player(pname,
+            core.chat_send_player(pname,
                 string.format("Barre trop excentree ! (%.1f blocs du centre XZ, max %.0f)",
                     helm_dist, max_off))
             return
@@ -1015,14 +1015,14 @@ function convert_to_entity(pos,player)
 
     local rel_set={}
     for _,bp in ipairs(structure) do
-        rel_set[minetest.pos_to_string(vector.subtract(bp,center))]=true
+        rel_set[core.pos_to_string(vector.subtract(bp,center))]=true
     end
 
     -- Construire sdata
     local sdata={}
     for _,bp in ipairs(structure) do
-        local nd=minetest.get_node(bp)
-        local def=minetest.registered_nodes[nd.name]
+        local nd=core.get_node(bp)
+        local def=core.registered_nodes[nd.name]
         local rel=vector.subtract(bp,center)
         local facecons=nil
         if def then
@@ -1030,7 +1030,7 @@ function convert_to_entity(pos,player)
             if mt=="fence" or mt=="pane" or mt=="wall" then
                 facecons={}
                 for i,d in ipairs(DIRS4H) do
-                    facecons[i]=rel_set[minetest.pos_to_string(vector.add(rel,d))]==true
+                    facecons[i]=rel_set[core.pos_to_string(vector.add(rel,d))]==true
                 end
             end
         end
@@ -1038,11 +1038,11 @@ function convert_to_entity(pos,player)
     end
 
     -- Supprimer les blocs du monde
-    for _,bp in ipairs(structure) do minetest.set_node(bp,{name="air"}) end
+    for _,bp in ipairs(structure) do core.set_node(bp,{name="air"}) end
 
-    local ent=minetest.add_entity(center,ename)
+    local ent=core.add_entity(center,ename)
     if not ent then
-        minetest.chat_send_player(pname,"Erreur : impossible de creer l'entite !"); return
+        core.chat_send_player(pname,"Erreur : impossible de creer l'entite !"); return
     end
     local le=ent:get_luaentity()
     if le then
@@ -1057,7 +1057,7 @@ function convert_to_entity(pos,player)
         le._blocks_spawned = false
         apply_hitbox(le)
         spawn_blocks(le)
-        minetest.chat_send_player(pname,
+        core.chat_send_player(pname,
             string.format("(Manoeuvrabilite : %.0f%%)",mf*100))
     end
 end
